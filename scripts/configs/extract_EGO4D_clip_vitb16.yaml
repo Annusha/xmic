@@ -1,0 +1,69 @@
+DATALOADER:
+  TRAIN_X:
+    BATCH_SIZE: 1
+  TEST:
+    BATCH_SIZE: 1
+  NUM_WORKERS: 32
+  SEGMENTS: True
+  FRAMES_PER_SEGMENT: -1
+  HAND_CROPS: False
+  CROPPER:
+    HAND_THS: 0.8
+    OBJ_THS: 0.01
+    ONLY_INTERACTED_OBJ: True
+    WITH_HANDS: True
+    SAVE_FILE: False
+    TAG: "_v2"
+
+DATA:
+  PATH_TO_DATA_DIR: '../../data/ego4d/annotations/'
+  PATH_PREFIX: '../../data/ego4d/clips_256ss/'
+  MEAN: [ 0.48145466, 0.4578275, 0.40821073 ]
+  STD: [ 0.26862954, 0.26130258, 0.27577711 ]
+  RANDOM_FLIP: False
+  NUM_FRAMES: 30
+  SAMPLING_RATE: 1
+  TARGET_FPS: 30
+
+DATASET:
+  NAME: Ego4DRecognitionWrapper
+  ROOT: '../../data/ego4d/clips_256ss/'
+  LABEL_TYPE: noun
+  SUBSET: 'all'
+
+
+INPUT:
+  SIZE: (224, 224)
+  INTERPOLATION: "bicubic"
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  TRANSFORMS: ["normalize"]
+
+OPTIM:
+  NAME: "sgd"
+  LR: 0.002
+  MAX_EPOCH: 200
+  LR_SCHEDULER: "cosine"
+  WARMUP_EPOCH: 1
+  WARMUP_TYPE: "constant"
+  WARMUP_CONS_LR: 1e-5
+
+TRAIN:
+  PRINT_FREQ: 5
+  BATCH_SIZE: 32
+  TEST_BEFORE_TRAIN: True
+
+MODEL:
+  BACKBONE:
+    NAME: "ViT-B/16"
+
+OUTPUT_DIR: '../../output/multimodal-prompt-learning/clip_feat/'
+SEED: 42
+NUM_GPUS: 1
+
+TEST:
+  FINAL_MODEL: "best_val"
+  BATCH_SIZE: 32
+  LOADER: 'val'
+  LT_EVAL: True
+  BASE_NOVEL_EVAL: True

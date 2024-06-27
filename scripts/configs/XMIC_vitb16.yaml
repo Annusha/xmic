@@ -1,0 +1,133 @@
+
+
+TRAINER:
+  NAME: XMIC
+  COOP:
+    N_CTX: 0
+    CSC: False
+    CLASS_TOKEN_POSITION: end
+    PREC: amp
+  TEMPORAL:
+    TYPE: 'multigroup_attention_avg'
+    TFM_LAYERS: 1
+    TFM_LAYERS_TEMP: 2
+    TFM_HEADS: 4
+    TFM_BOTTLE_NECK: 4.0
+  DECOMP_COCOOP:
+    VISUAL_WITH_CTX: True
+    VISUAL_CTX_NEW: True
+    MLP_LY: 2
+    VISUAL_N_CTX: 16
+    VISUAL_CTX_NORM: False
+    TEXTUAL_NORM: False
+    VISUAL_NORM: False
+    SKIP_TEXT_ENCODER: True
+    MLP_NARRATIONS: False
+    MLP_NARRATIONS2: False
+    FIXED_SCALE_FACTOR_VIS_CTX: 2.0
+    LEARNABLE_SCALE_FACTOR_VIS_CTX: False
+    CLIPLOSS_W: 0.0
+    SCALE_FACTOR_V2T: 0.0
+    SCALE_FACTOR_T2V: 0.0
+    CLIP_ADAPTER: False
+    WITH_RELU: True
+    MLP_LY_TXT2TXT: False
+
+
+DATASET:
+  NAME: Ego4DRecognitionWrapper
+  ROOT: '../../data/epic/epic_fadime'
+  LABEL_TYPE: all
+  SUBSET: 'all'
+  LABEL_SUBTYPES: 'noun'
+  EGTEA:
+    ANNOTATIONS_DIR: ''
+
+DATA:
+  PATH_TO_DATA_DIR: '../../data/ego4d/annotations/'
+  PATH_PREFIX: '../../output/multimodal-prompt-learning/clip_feat/Ego4DRecognitionWrapper/ego4d_extract_clip_vitb16_HC/'
+  PATH_PREFIX_DINO: '../../output/multimodal-prompt-learning/clip_feat/Ego4DRecognitionWrapper/ego4d_extract_clip_vitb16_HC/'
+  PATH_PREFIX_DINO2: '../../output/multimodal-prompt-learning/clip_feat/Ego4DRecognitionWrapper/ego4d_extract_clip_vitb16/'
+  NUM_FRAMES: 16  # should match DATALOADER.FRAMES_PER_SEGMENT
+  MEAN: [0.48145466, 0.4578275, 0.40821073]
+  STD: [0.26862954, 0.26130258, 0.27577711]
+  EGO4D_CLIPS_LENGTH: 4
+
+DATALOADER:
+  TRAIN_X:
+    BATCH_SIZE: 32
+  TEST:
+    BATCH_SIZE: 100
+  NUM_WORKERS: 0
+  SEGMENTS: True
+  FRAMES_PER_SEGMENT: 16
+  HAND_CROPS: False
+  CROPPER:
+    HAND_THS: 0.8
+    OBJ_THS: 0.01
+    ONLY_INTERACTED_OBJ: True
+    WITH_HANDS: True
+    SAVE_FILE: False
+    TAG: "_v2"
+  USE_EXTRACTED_FEATURES: True
+  LOAD_ALL_FEATURES_AT_ONCE: True
+  FEATURES_MODEL: 'CLIP-vit-b-16'
+  FEATURES_NAME: 'extract_clip_vitb16_segments_HCv2'
+  LAVILA_FEATURES: False
+  USE_DINO_FEATURES: True
+  FEATURES_NAME_DINO: 'extract_clip_vitb16_segments_HCv2'
+  USE_DINO_FEATURES2: True
+  FEATURES_NAME_DINO2: 'extract_clip_vitb16_segments'
+  DINO_DIM: 512
+
+
+INPUT:
+  SIZE: (224, 224)
+  INTERPOLATION: "bicubic"
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  TRANSFORMS: ["random_resized_crop", "random_flip", "normalize"]
+
+OPTIM:
+  NAME: "adamw"
+  LR: 0.0005
+  ADAM_BETA1: 0.9
+  ADAM_BETA2: 0.98
+  MAX_EPOCH: 15
+  LR_SCHEDULER: "single_step"
+  WARMUP_EPOCH: 5
+  WARMUP_TYPE: "linear"
+  WARMUP_MIN_LR: 1e-7
+  WEIGHT_DECAY: 0.01
+
+
+TRAIN:
+  PRINT_FREQ: 5
+  BATCH_SIZE: 32
+  TEST_BEFORE_TRAIN: True
+  CHECKPOINT_FREQ: 0
+  CHECKPOINT_EARLY_EPOCHS: 0
+  CHECKPOINT_EVERY_LAST_EPOCH: True
+
+TEST:
+  FINAL_MODEL: "best_val"
+  BATCH_SIZE: 32
+  LOADER: 'val'
+  LT_EVAL: False
+  BASE_NOVEL_EVAL: True
+  CROSS_DATASET:
+    RETRIEVAL: False
+    EVAL: True
+    DATASET_NAME: EpicKitchenSegmentsAllLabelTypes
+    SPLIT: 'val'
+    EGTEA: False
+
+
+MODEL:
+  BACKBONE:
+    NAME: "ViT-B/16"
+    FRAMEWORK: "clip"
+#    CKPT_PATH: '../../models/lavila/clip_openai_timesformer_large.narrator_rephraser.ep_0003.md5sum_c89337.pth'
+
+SEED: 1235
+
