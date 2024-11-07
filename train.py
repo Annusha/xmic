@@ -161,7 +161,7 @@ def main(args):
     if args.neptune and is_main_process():
         print('RANK', get_rank(), get_world_size())
 
-        api_token = 'eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiI4ZWVjY2ZiOC1hODhmLTQyOTctOGIxYi00ZTZjYWQ4ZjhjY2IifQ=='
+        api_token = 'your_api'
         trainer.init_neptune(
             project='prompt-learning/baselines',
             api_token=api_token,
